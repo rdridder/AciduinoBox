@@ -1,0 +1,26 @@
+{
+  "name": "uClock",
+  "version": "2.2.1",
+  "description": "A Library to implement BPM clock tick calls using hardware interruption. Supported and tested on AVR boards(ATmega168/328, ATmega16u4/32u4 and ATmega2560) and ARM boards(Teensy, STM32XX, ESP32, Raspberry Pico, Seedstudio XIAO M0 and RP2040)",
+  "keywords": "bpm, clock, timing, tick, music, generator",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/midilab/uClock.git"
+  },
+  "authors":
+  [
+    {
+      "name": "Romulo Silva",
+      "email": "contact@midilab.co",
+      "url": "https://midilab.co",
+      "maintainer": true
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://midilab.co/umodular/",
+  "headers": "uClock.h",
+  "dependencies": {},
+  "frameworks": "Arduino",
+  "platforms": "atmelavr,atmelmegaavr,espressif32,ststm32,teensy,atmelsam,raspberrypi"
+}
