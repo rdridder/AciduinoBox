@@ -1,7 +1,7 @@
 # AciduinoBox
 An attemt to join Aciduino and AcidBox
 
-original projects
+original projects:
 
 https://github.com/midilab/aciduino
 
