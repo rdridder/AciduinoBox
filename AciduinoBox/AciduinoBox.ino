@@ -253,6 +253,7 @@ void setup(void) {
   DEBUG_PORT.begin(115200); 
 #endif
 delay(200);
+  DEBUG("starting setup");
 
   btStop(); // we don't want bluetooth to consume our precious cpu time 
 
@@ -296,6 +297,7 @@ delay(200);
   
   
   // inits all hardware setup for the selected port
+  DEBUG("init ports aciduino");
   initPort();
   
   // i2s_write(i2s_num, out_buf[current_out_buf]._signed, sizeof(out_buf[current_out_buf]._signed), &bytes_written, portMAX_DELAY);
