@@ -339,12 +339,25 @@ static uint32_t last_ms = micros();
  *  Finally, the LOOP () ***********************************************************************************************************
 */
 
+#ifdef DEBUG_ON 
+int counter = 0;
+#endif
+
+
 void loop() { // default loopTask running on the Core1
   // you can still place some of your code here
   // or   vTaskDelete(NULL);
   
   // processButtons();
   
+#ifdef DEBUG_ON
+  if(counter == 100000) {
+    DEBUG("loop");
+    counter = 0;
+  }
+  counter++;
+#endif
+
   aciduino.run();
   
   regular_checks();    

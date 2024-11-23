@@ -15,7 +15,7 @@
 // main navigation
 #define USE_CHANGER_POT
 //#define USE_CHANGER_ENCODER
-//#define USE_TRANSPORT_BUTTON
+#define USE_TRANSPORT_BUTTON
 
 //#define USE_POT_MICRO
 
@@ -61,20 +61,23 @@
 #define NAV_SHIFT_PIN             12
 
 #define NAV_FUNCTION1_PIN         14
-#define NAV_FUNCTION2_PIN         27
+#define NAV_FUNCTION2_PIN         47
 #define NAV_GENERAL1_PIN          33
-#define NAV_GENERAL2_PIN          32
-#define NAV_RIGHT_PIN             5
-#define NAV_UP_PIN                18
-#define NAV_DOWN_PIN              19
+#define NAV_GENERAL2_PIN          45
+#define NAV_RIGHT_PIN             13
+#define NAV_UP_PIN                38
+#define NAV_DOWN_PIN              39
 #define NAV_LEFT_PIN              23
 
-//#define TRANSPORT_BUTTON_1_PIN    ??
+#define TRANSPORT_BUTTON_1_PIN    40
+
+#define OLED_CLOCK_PIN            8
+#define OLED_DATA_PIN             9
 
 // going to use changer pot?
 // esp32 30pins
 // GPIO 15 - ADC2_3
-#define CHANGER_POT_PIN             15
+#define CHANGER_POT_PIN             48
 
 // 4 pot extension
 //#define POT_MICRO_1_PIN           15
@@ -306,11 +309,15 @@ void initPort() {
   uCtrl.initMidi();
   // ESP32 related
 #if defined(CONFIG_TINYUSB_ENABLED) && (defined(ARDUINO_ARCH_ESP32) || defined(ESP32))
-  // initing esp32nativeusbmidi
-  espNativeUsbMidi.begin();
-  // initing USB device
-  USB.productName("aciduinov2");
-  USB.begin();
+  // TODO
+  // Below code seems to hang the ESP32
+  // Might also be because UART is not plugged in
+  // No clue yet
+  // // initing esp32nativeusbmidi
+  // espNativeUsbMidi.begin();
+  // // initing USB device
+  // USB.productName("aciduinov2");
+  // USB.begin();
 #endif
 #if defined(USE_BT_MIDI_ESP32) && defined(USE_MIDI3) && defined(CONFIG_BT_ENABLED) && (defined(ARDUINO_ARCH_ESP32) || defined(ESP32))
   BLEMIDI3.setHandleConnected([]() {
