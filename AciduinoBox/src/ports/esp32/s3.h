@@ -67,7 +67,7 @@
 #define NAV_RIGHT_PIN             13
 #define NAV_UP_PIN                38
 #define NAV_DOWN_PIN              39
-#define NAV_LEFT_PIN              23
+#define NAV_LEFT_PIN              48
 
 #define TRANSPORT_BUTTON_1_PIN    40
 
