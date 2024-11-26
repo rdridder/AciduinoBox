@@ -19,7 +19,7 @@
 
 //#define USE_POT_MICRO
 
-#define FLIP_DISPLAY
+//#define FLIP_DISPLAY
 //#define INVERT_POT_READ
 
 // enable usb-midi? will eneble USE_MIDI3
@@ -62,7 +62,7 @@
 
 #define NAV_FUNCTION1_PIN         14
 #define NAV_FUNCTION2_PIN         47
-#define NAV_GENERAL1_PIN          33
+#define NAV_GENERAL1_PIN          42
 #define NAV_GENERAL2_PIN          45
 #define NAV_RIGHT_PIN             13
 #define NAV_UP_PIN                38
@@ -77,7 +77,7 @@
 // going to use changer pot?
 // esp32 30pins
 // GPIO 15 - ADC2_3
-#define CHANGER_POT_PIN             48
+#define CHANGER_POT_PIN             15
 
 // 4 pot extension
 //#define POT_MICRO_1_PIN           15
