@@ -102,7 +102,7 @@ float AD_env::process() {
       out = 0.0f;
       break;
     case AD_SEG_ATTACK:
-      x_ += (float)D0_ * ((float)attackTarget_ - (float)x_);
+      x_ = x_ + (float)D0_ * ((float)attackTarget_ - (float)x_);
       out = x_;
       if (out > peakLevel_ ) {
         mode_ = AD_SEG_DECAY;
@@ -111,7 +111,7 @@ float AD_env::process() {
       }
       break;
     case AD_SEG_DECAY:
-      x_ += (float)D0_ * ((float)target_ - (float)x_ );
+      x_ = x_ + (float)D0_ * ((float)target_ - (float)x_ );
       out = x_;
       if (out < 0.0f) {
         mode_ = AD_SEG_IDLE;

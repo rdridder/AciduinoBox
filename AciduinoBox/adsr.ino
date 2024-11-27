@@ -181,7 +181,7 @@ float Adsr::process() {
       break;
       
     case ADSR_SEG_ATTACK:
-      x_ += (float)D0_ * ((float)attackTarget_ - (float)x_);
+      x_ = x_ + (float)D0_ * ((float)attackTarget_ - (float)x_);
       out = x_;
       if (out > 1.0f) {
         mode_ = ADSR_SEG_DECAY;
@@ -194,7 +194,7 @@ float Adsr::process() {
     case ADSR_SEG_RELEASE:
     case ADSR_SEG_FAST_RELEASE:
     case ADSR_SEG_SEMI_FAST_RELEASE:
-      x_ += (float)D0_ * ((float)target_ - (float)x_);
+      x_ = x_ + (float)D0_ * ((float)target_ - (float)x_);
       out = x_;
       if (out < 0) {
         mode_ = ADSR_SEG_IDLE;

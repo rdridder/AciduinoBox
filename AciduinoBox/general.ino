@@ -35,13 +35,13 @@ inline float  lookupTable(float (&table)[TABLE_SIZE+1], float index ) { // looku
   return res;
 }
 
-inline float IRAM_ATTR fclamp(float in, float min, float max){
+inline float  fclamp(float in, float min, float max){
     if (in>max) return max;
     if (in<min) return min;
     return in;
 }
 
-inline float IRAM_ATTR fast_shape(float x){
+inline float  fast_shape(float x){
     int sign = 1;
     if (x<0) {
       x = -x;
@@ -61,7 +61,7 @@ inline float IRAM_ATTR fast_shape(float x){
 }
 
 
-void IRAM_ATTR fast_sincos(float x, float* sinRes, float* cosRes){
+void  fast_sincos(float x, float* sinRes, float* cosRes){
   float xc, f, res, index;
   int i, sign;
   sign = x < 0.0;
@@ -82,7 +82,7 @@ void IRAM_ATTR fast_sincos(float x, float* sinRes, float* cosRes){
   *cosRes = sign ? -res : res;
 }
 
-float IRAM_ATTR fast_sin(float x) { // 8.798 MOP/S full period lookup table. With table size = 32+1, max error is about 0.5% 
+float  fast_sin(float x) { // 8.798 MOP/S full period lookup table. With table size = 32+1, max error is about 0.5% 
   float f, res;
   int i;
   int sign = x < 0.0;
@@ -94,7 +94,7 @@ float IRAM_ATTR fast_sin(float x) { // 8.798 MOP/S full period lookup table. Wit
   return  sign ? -res : res;
 }
 
-inline float IRAM_ATTR fast_cos(float x) { // 7.666 MOP/S full period lookup table. With table size = 32+1, max error is about 0.5% 
+inline float  fast_cos(float x) { // 7.666 MOP/S full period lookup table. With table size = 32+1, max error is about 0.5% 
   float f, res, index;
   int i;
   x += PI_DIV_TWO;

@@ -124,7 +124,7 @@ DEBF("Select note: %d\r\n", note);
     
     // float global_pitch_decay = 0.0f; // good from -0.2 to +1.0
     
-    volatile int32_t sampleInfoCount = -1; // storing the count if found samples in file system 
+    int32_t sampleInfoCount = -1; // storing the count if found samples in file system 
     float slowRelease; // slow releasing signal will be used when sample playback stopped 
     uint8_t* RamCache = NULL ;
 
