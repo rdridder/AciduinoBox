@@ -91,12 +91,12 @@ bool Storage::copy(int address_from, int address_to, size_t n)
 
 bool Storage::save(void *data, size_t n, const char * path)
 {
-
+return true;
 }
 
 bool Storage::load(void *data, size_t n, const char * path)
 {
-
+return true;
 }
 
 } }
