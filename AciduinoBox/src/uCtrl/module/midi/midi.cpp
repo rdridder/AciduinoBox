@@ -55,6 +55,7 @@ bool Midi::read(uint8_t port, uint8_t interrupted)
 	//readFunctions[_port](midiArray[_port], interrupted);
 	//midiArray[_port]->read(interrupted);
 	midiArray[_port]->read(0);
+  return true;
 }
 
 void Midi::readAllPorts(uint8_t interrupted)

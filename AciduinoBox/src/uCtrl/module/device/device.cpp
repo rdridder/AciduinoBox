@@ -1076,7 +1076,9 @@ bool Device::isPressed(uint8_t port)
 */
 
 	if ( uCtrl.din != nullptr )
-    	return uCtrl.din->getDataRaw(port);		
+    	return uCtrl.din->getDataRaw(port);
+  
+  return false;
 }
 
 void Device::ctrlMap(uint8_t device_id, uint16_t control_id, uint16_t range_min, uint16_t range_max, int16_t label_offset, uint8_t * name)

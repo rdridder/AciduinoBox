@@ -334,6 +334,8 @@ uint8_t AcidSequencerClass::getMute(uint8_t track, uint8_t voice)
   // 808 request
   if(track >= TRACK_NUMBER_303)
     return _engine808.getMute(track-TRACK_NUMBER_303, voice);
+  
+  return 0;
 }
 
 void AcidSequencerClass::clearTrack(uint8_t track)

@@ -10,7 +10,9 @@
 
 // make use of bpm led?
 // the blue led
-#define LED_BUILTIN       2
+#ifndef LED_BUILTIN
+  #define LED_BUILTIN       2
+#endif
 #define USE_BPM_LED       LED_BUILTIN
 // main navigation
 #define USE_CHANGER_POT

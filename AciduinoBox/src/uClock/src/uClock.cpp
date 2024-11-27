@@ -361,9 +361,9 @@ bool inline uClockClass::processShuffle()
         // keep track of next note shuffle for current note lenght control
         shuffle_length_ctrl = shuffle.step[(step_counter+1)%shuffle.size];
         if (shff > 0)
-            shuffle_length_ctrl -= shff;
+            shuffle_length_ctrl = shuffle_length_ctrl - shff;
         if (shff < 0)
-            shuffle_length_ctrl += shff;
+            shuffle_length_ctrl = shuffle_length_ctrl + shff;
         shuffle_shoot_ctrl = false;
         return true;
     }
@@ -389,7 +389,7 @@ void uClockClass::handleExternalClock()
             ext_clock_us = now_clock_us;
 
             // external clock tick me!
-            ext_clock_tick++;
+            ext_clock_tick = ext_clock_tick + 1;
 
             // accumulate interval incomming ticks data for getTempo() smooth reads on slave mode
             if(++ext_interval_idx >= EXT_INTERVAL_BUFFER_SIZE) {

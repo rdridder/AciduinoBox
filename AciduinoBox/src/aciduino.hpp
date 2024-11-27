@@ -108,7 +108,7 @@ public:
   void play();
   void stop();
   uint8_t getSelectedTrack() { return _selected_track; };
-  uint8_t setSelectedTrack(uint8_t selected_track) { _selected_track = selected_track; };
+  void setSelectedTrack(uint8_t selected_track) { _selected_track = selected_track; };
   uint8_t isPlaying() { return _playing; };
   void generatePattern(int8_t track = -1);
 
