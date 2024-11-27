@@ -1,22 +1,9 @@
 /*
 
-  AcidBox
-  ESP32 acid combo of 303 + 303 + 808 like synths. MIDI driven. I2S output to DAC. No indication. Uses both cores of ESP32.
+  AciduinoBox
 
-  To build the thing
-  You will need an ESP32 with PSRAM (ESP32 WROVER module). Preferrable an external DAC, like PCM5102. In ArduinoIDE Tools menu select:
-
-* * Board: "ESP32 Dev Module" or "ESP32S3 Dev Module"
-* * Partition scheme: No OTA (1MB APP/ 3MB SPIFFS)
-* * PSRAM: "enabled" or "OPI PSRAM" or what type you have
-
-
-  !!!!!!!! ATTENTION !!!!!!!!!
-  You will need to upload samples from /data folder to the ESP32 flash, otherwise you'll only have 40kB samples from samples.h. 
-  To upload samples follow the instructions:
-  
-  https://github.com/lorol/LITTLEFS#arduino-esp32-littlefs-filesystem-upload-tool
-  And then use Tools -> ESP32 Sketch Data Upload
+  The project combines Aciduino sequencer and AcidBox synth combo.
+  Finally you have a sequencer 2 x TB-303 + 
 
 */
 #pragma GCC optimize ("O2")
@@ -37,38 +24,6 @@
 #include "src/aciduino.hpp"
 
 #include "src/ports/esp32/s3.h"
-
-
-// =============================================================== MIDI interfaces ===============================================================
-
-#if defined MIDI_VIA_SERIAL2 || defined MIDI_VIA_SERIAL
-#include <MIDI.h>
-#endif
-
-#ifdef MIDI_VIA_SERIAL
-
-  struct CustomBaudRateSettings : public MIDI_NAMESPACE::DefaultSettings {
-    static const long BaudRate = 115200;
-    static const bool Use1ByteParsing = false;
-  };
-
-  MIDI_NAMESPACE::SerialMIDI<MIDI_PORT_TYPE, CustomBaudRateSettings> serialMIDI(MIDI_PORT);
-  MIDI_NAMESPACE::MidiInterface<MIDI_NAMESPACE::SerialMIDI<MIDI_PORT_TYPE, CustomBaudRateSettings>> MIDI((MIDI_NAMESPACE::SerialMIDI<MIDI_PORT_TYPE, CustomBaudRateSettings>&)serialMIDI);
-
-#endif
-
-#ifdef MIDI_VIA_SERIAL2
-// MIDI port on UART2,   pins 16 (RX) and 17 (TX) prohibited on ESP32, as they are used for PSRAM
-struct Serial2MIDISettings : public midi::DefaultSettings {
-  static const long BaudRate = 31250;
-  static const int8_t RxPin  = MIDIRX_PIN;
-  static const int8_t TxPin  = MIDITX_PIN;
-  static const bool Use1ByteParsing = false;
-};
-MIDI_NAMESPACE::SerialMIDI<HardwareSerial> Serial2MIDI2(Serial2);
-MIDI_NAMESPACE::MidiInterface<MIDI_NAMESPACE::SerialMIDI<HardwareSerial, Serial2MIDISettings>> MIDI2((MIDI_NAMESPACE::SerialMIDI<HardwareSerial, Serial2MIDISettings>&)Serial2MIDI2);
-#endif
-
 
 // lookuptables
 static float DRAM_ATTR WORD_ALIGNED_ATTR midi_pitches[128];
@@ -102,7 +57,7 @@ static float DRAM_ATTR WORD_ALIGNED_ATTR  drums_buf_l[2][DMA_BUF_LEN];   // drum
 static float DRAM_ATTR WORD_ALIGNED_ATTR  drums_buf_r[2][DMA_BUF_LEN];   // drums R
 static float DRAM_ATTR WORD_ALIGNED_ATTR  mix_buf_l[2][DMA_BUF_LEN];     // mix L channel
 static float DRAM_ATTR WORD_ALIGNED_ATTR  mix_buf_r[2][DMA_BUF_LEN];     // mix R channel
-static union {                              // a dirty trick, instead of true converting
+static union {                              // instead of true converting
   int16_t WORD_ALIGNED_ATTR _signed[DMA_BUF_LEN * 2];
   uint16_t WORD_ALIGNED_ATTR _unsigned[DMA_BUF_LEN * 2];
 } out_buf[2];                               // i2s L+R output buffer
@@ -132,28 +87,6 @@ FxReverb Reverb;
 #endif
 Compressor Comp;
 
-hw_timer_t * timer1 = NULL;            // Timer variables
-hw_timer_t * timer2 = NULL;            // Timer variables
-portMUX_TYPE timer1Mux = portMUX_INITIALIZER_UNLOCKED; 
-portMUX_TYPE timer2Mux = portMUX_INITIALIZER_UNLOCKED; 
-volatile boolean timer1_fired = false;
-volatile boolean timer2_fired = false;
-
-/*
- * Timer interrupt handler **********************************************************************************************************************************
-*/
-
-void IRAM_ATTR onTimer1() {
-   portENTER_CRITICAL_ISR(&timer1Mux);
-   timer1_fired = true;
-   portEXIT_CRITICAL_ISR(&timer1Mux);
-}
- 
-void IRAM_ATTR onTimer2() {
-   portENTER_CRITICAL_ISR(&timer2Mux);
-   timer2_fired = true;
-   portEXIT_CRITICAL_ISR(&timer2Mux);
-}
 
 /* 
  * Core Tasks ************************************************************************************************************************
@@ -208,37 +141,32 @@ static void IRAM_ATTR audio_task1(void *userData) {
 // task for Core1, which tipically runs user's code on ESP32
 // static void IRAM_ATTR audio_task2(void *userData) {
 static void IRAM_ATTR audio_task2(void *userData) {
+  size_t prescaler = 0;
+  
   while (true) {
     taskYIELD();
- /*   
-    if (ulTaskNotifyTake(pdTRUE, portMAX_DELAY)) { // wait for the notification from the SynthTask1
-
-      
-      taskYIELD();
+ 
+    c1t = micros();
     
+    aciduino.run();
       
-      xTaskNotifyGive(SynthTask1); 
-    }    
- */
-    c1T = micros() - c1t;
-
-    art = micros();
-    
-    if (timer2_fired) {
-      timer2_fired = false;
+    prescaler++;
+    if (prescaler % 128 == 0) {
 #ifdef TEST_POTS      
-       readPots();
+      readPots();
 #endif
-       
+
+      // aciduino.run(); // we can place it here, if it's not to run that often
+      // regular_checks(); // or inside of this function
+      
 #ifdef DEBUG_TIMING
         DEBF ("CORE micros: synt1, synt2, drums, mixer, DMA_LEN\t%d\t%d\t%d\t%d\t%d\r\n" , s1T, s2T, drT, fxT, DMA_BUF_TIME);
         //    DEBF ("TaskCore0=%dus TaskCore1=%dus DMA_BUF=%dus\r\n" , c0T , c1T , DMA_BUF_TIME);
         //    DEBF ("AllTheRestCore1=%dus\r\n" , arT);
 #endif
-    }    
+    }
     
-//    taskYIELD();
-    arT = micros() - art;
+    c1T = micros() - c1t;
   }
 }
 
@@ -252,7 +180,7 @@ void setup(void) {
 #ifdef DEBUG_ON 
   DEBUG_PORT.begin(115200); 
 #endif
-delay(200);
+  delay(200); // let the serial start
   DEBUG("starting setup");
 
   btStop(); // we don't want bluetooth to consume our precious cpu time 
@@ -276,10 +204,7 @@ delay(200);
   Reverb.Init();
 #endif
   Delay.Init();
-  Comp.Init(SAMPLE_RATE);
-#ifdef JUKEBOX
-  init_midi(); // AcidBanger function
-#endif
+  Comp.Init(SAMPLE_RATE); 
 
   // silence while we haven't loaded anything reasonable
   for (int i = 0; i < DMA_BUF_LEN; i++) {
@@ -300,36 +225,16 @@ delay(200);
   DEBUG("init ports aciduino");
   initPort();
   
-  // i2s_write(i2s_num, out_buf[current_out_buf]._signed, sizeof(out_buf[current_out_buf]._signed), &bytes_written, portMAX_DELAY);
-
-  //xTaskCreatePinnedToCore( audio_task1, "SynthTask1", 8000, NULL, (1 | portPRIVILEGE_BIT), &SynthTask1, 0 );
-  //xTaskCreatePinnedToCore( audio_task2, "SynthTask2", 8000, NULL, (1 | portPRIVILEGE_BIT), &SynthTask2, 1 );
-  xTaskCreatePinnedToCore( audio_task1, "SynthTask1", 5000, NULL, 1, &SynthTask1, 0 );
+  
+  DEBUG("start synth tasks");
+  xTaskCreatePinnedToCore( audio_task1, "SynthTask1", 5000, NULL, 8, &SynthTask1, 0 );
   xTaskCreatePinnedToCore( audio_task2, "SynthTask2", 5000, NULL, 1, &SynthTask2, 1 );
 
   // somehow we should allow tasks to run
-  xTaskNotifyGive(SynthTask1);
-  //  xTaskNotifyGive(SynthTask2);
+  // xTaskNotifyGive(SynthTask1);
+  // xTaskNotifyGive(SynthTask2);
   processing = true;
 
-#if ESP_ARDUINO_VERSION_MAJOR < 3 
-  // timer interrupt
-  /*
-  timer1 = timerBegin(0, 80, true);               // Setup timer for midi
-  timerAttachInterrupt(timer1, &onTimer1, true);  // Attach callback
-  timerAlarmWrite(timer1, 4000, true);            // 4000us, autoreload
-  timerAlarmEnable(timer1);
-  */
-  timer2 = timerBegin(1, 80, true);               // Setup general purpose timer
-  timerAttachInterrupt(timer2, &onTimer2, true);  // Attach callback
-  timerAlarmWrite(timer2, 200000, true);          // 200ms, autoreload 
-  timerAlarmEnable(timer2);
-  
-#else 
-  timer2 = timerBegin(1000000);               // Setup general purpose timer
-  timerAttachInterrupt(timer2, &onTimer2);  // Attach callback
-  timerAlarm(timer2, 200000, true, 0);          // 200ms, autoreload
-#endif
 DEBUG("setup done");
 }
 
@@ -339,29 +244,13 @@ static uint32_t last_ms = micros();
  *  Finally, the LOOP () ***********************************************************************************************************
 */
 
-#ifdef DEBUG_ON 
-int counter = 0;
-#endif
-
 
 void loop() { // default loopTask running on the Core1
   // you can still place some of your code here
-  // or   vTaskDelete(NULL);
+  vTaskDelete(NULL);
   
-  // processButtons();
-  
-#ifdef DEBUG_ON
-  if(counter == 100000) {
-    DEBUG("loop");
-    counter = 0;
-  }
-  counter++;
-#endif
-
-  aciduino.run();
-  
-  regular_checks();    
-  taskYIELD(); // this can wait
+  // processButtons();     
+  // taskYIELD(); // this can wait
 }
 
 /* 
@@ -413,52 +302,30 @@ void paramChange(uint8_t paramNum, float paramVal) {
 }
 
 
-#ifdef JUKEBOX
-void jukebox_tick() {
-  run_tick();
-  myRandomAddEntropy((uint16_t)(micros() & 0x0000FFFF));
-}
-#endif
-
-
 void regular_checks() {
-  timer1_fired = false;
-  
-#ifdef MIDI_VIA_SERIAL
-  MIDI.read();
-#endif
-
-#ifdef MIDI_VIA_SERIAL2
-  MIDI2.read();
-#endif
-  
-#ifdef JUKEBOX
-  jukebox_tick();
-#endif
-
-
+    // place some code that won't require every single tick of core1 time
 }
 
 
-inline void IRAM_ATTR drums_generate() {
+inline void  drums_generate() {
     for (int i=0; i < DMA_BUF_LEN; i++){
       Drums.Process( &drums_buf_l[current_gen_buf][i], &drums_buf_r[current_gen_buf][i] );      
     } 
 }
 
-inline void IRAM_ATTR synth1_generate() {
+inline void  synth1_generate() {
     for (int i=0; i < DMA_BUF_LEN; i++){
       synth1_buf[current_gen_buf][i] = Synth1.getSample() ;      
     } 
 }
 
-inline void IRAM_ATTR synth2_generate() {
+inline void  synth2_generate() {
     for (int i=0; i < DMA_BUF_LEN; i++){
       synth2_buf[current_gen_buf][i] = Synth2.getSample() ;      
     } 
 }
 
-void IRAM_ATTR mixer() { // sum buffers 
+void  mixer() { // sum buffers 
 #ifdef DEBUG_MASTER_OUT
   static float meter = 0.0f;
 #endif
