@@ -77,7 +77,7 @@ void SdCard::init(SPIClass * spi_device, uint8_t chip_select, bool is_shared)
 bool SdCard::openFile(const char * path, uint8_t oflags, uint8_t interrupted)
 {
   if ( oflags == 1 ) {
-    oflags = O_WRITE | O_CREAT;
+    oflags = (uint8_t)(O_WRITE | O_CREAT);
     if ( interrupted == 0 && _is_shared ) ATOMIC_START
     _sd_fat.remove(path);
     if ( interrupted == 0 && _is_shared ) ATOMIC_END
