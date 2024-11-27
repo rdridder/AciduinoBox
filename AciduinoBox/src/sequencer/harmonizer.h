@@ -37,29 +37,29 @@
 // Eg. IONIAN WWhWWWh. = B11011100 (W) = Whole Tone (h) = half tone
 
 // MAJOR MODES
-#define IONIAN      B11011100
-#define DORIAN      B10111010
-#define PHRYGIAN    B01110110
-#define LYDIAN      B11101100
-#define MIXOLYDIAN  B11011010
-#define AEOLIAN     B10110110
-#define LOCRIAN     B01101110
+#define IONIAN      0b11011100
+#define DORIAN      0b10111010
+#define PHRYGIAN    0b01110110
+#define LYDIAN      0b11101100
+#define MIXOLYDIAN  0b11011010
+#define AEOLIAN     0b10110110
+#define LOCRIAN     0b01101110
 
 // MINOR MODES
 // I 	ascending melodic minor: WhWWWWh
-#define MELODIC_MINOR	B10111100
+#define MELODIC_MINOR	0b10111100
 // II 	Phrygian ♮6 (or Dorian ♭2): hWWWWhW
-#define PHRYGIAN6      	B01111010
+#define PHRYGIAN6     0b01111010
 // III 	Lydian augmented (Lydian ♯5): WWWWhWh
-#define LYDIAN5    		B11110100
+#define LYDIAN5    		0b11110100
 // IV 	Lydian dominant (also, "Lydian ♭7", Acoustic scale, or Mixolydian ♯4): WWWhWhW
-#define LYDIAN7      	B11101010
+#define LYDIAN7      	0b11101010
 // V 	Mixolydian ♭6 (or melodic major or simply "fifth mode"): WWhWhWW
-#define MIXOLYDIAN6  	B11010110
+#define MIXOLYDIAN6  	0b11010110
 // VI 	Locrian ♮2 (also known as "half-diminished" scale): WhWhWWW
-#define LOCRIAN2     	B10101110
+#define LOCRIAN2     	0b10101110
 // VII 	Super Locrian (also "altered dominant scale", or "altered scale"): hWhWWWW
-#define SUPER_LOCRIAN  	B01011110
+#define SUPER_LOCRIAN  0b01011110
 
 typedef struct
 {

@@ -153,7 +153,7 @@ void Engine808::on96PPQNCall(uint32_t tick)
       // normal trigger on event
       if ( _sequencer[track].voice[i].trigger_ctrl > 0 ) { 
 
-        --_sequencer[track].voice[i].trigger_ctrl;
+        _sequencer[track].voice[i].trigger_ctrl = _sequencer[track].voice[i].trigger_ctrl - 1;
         if ( _sequencer[track].voice[i].trigger_ctrl == 0 ) {
           _onEventCallback(NOTE_OFF, _sequencer[track].voice[i].note, 0, track+TRACK_NUMBER_303);
         }
@@ -162,7 +162,7 @@ void Engine808::on96PPQNCall(uint32_t tick)
       } else if ( _sequencer[track].voice[i].trigger_ctrl < 0 ) { 
         
         bool shot_the_moon = false;
-        ++_sequencer[track].voice[i].trigger_ctrl;
+        _sequencer[track].voice[i].trigger_ctrl = _sequencer[track].voice[i].trigger_ctrl + 1;
         if (_sequencer[track].roll_type <= FLAM_5) {
           if (_sequencer[track].voice[i].trigger_ctrl == _sequencer[track].roll_type*-1)
             shot_the_moon = true;

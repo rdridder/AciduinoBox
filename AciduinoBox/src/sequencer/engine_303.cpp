@@ -411,7 +411,7 @@ void Engine303::on96PPQNCall(uint32_t tick)
     // handle note on stack
     for ( uint8_t i = 0; i < NOTE_STACK_SIZE_303; i++ ) {
       if ( _sequencer[track].stack[i].length != -1 ) {
-        --_sequencer[track].stack[i].length;
+        _sequencer[track].stack[i].length = _sequencer[track].stack[i].length - 1;
         if ( _sequencer[track].stack[i].length == 0 ) {
           _onEventCallback(NOTE_OFF, _sequencer[track].stack[i].note, 0, track);
           _sequencer[track].stack[i].length = -1;
