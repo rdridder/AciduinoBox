@@ -94,7 +94,8 @@ Compressor Comp;
 // Core0 task 
 // static void audio_task1(void *userData) {
 static void IRAM_ATTR audio_task1(void *userData) {
-  
+  DEBUG("Task @Core0 started");
+  delay(10);  
   while (true) {
     taskYIELD(); 
 //    if (ulTaskNotifyTake(pdTRUE, portMAX_DELAY)) { // we need all the generators to fill the buffers here, so we wait
@@ -142,13 +143,13 @@ static void IRAM_ATTR audio_task1(void *userData) {
 // static void IRAM_ATTR audio_task2(void *userData) {
 static void IRAM_ATTR audio_task2(void *userData) {
   size_t prescaler = 0;
-  
+  DEBUG("Task @Core1 started");
+  delay(10);
   while (true) {
     taskYIELD();
  
     c1t = micros();
     
-    aciduino.run();
       
     prescaler++;
     if (prescaler % 128 == 0) {
@@ -181,7 +182,7 @@ void setup(void) {
   DEBUG_PORT.begin(115200); 
 #endif
   delay(200); // let the serial start
-  DEBUG("starting setup");
+  DEBUG("=====> Starting setup");
 
   btStop(); // we don't want bluetooth to consume our precious cpu time 
 
@@ -220,22 +221,21 @@ void setup(void) {
 
   i2sInit();
   
-  
   // inits all hardware setup for the selected port
-  DEBUG("init ports aciduino");
+  DEBUG("=====> Init ports aciduino");
   initPort();
   
   
-  DEBUG("start synth tasks");
-  xTaskCreatePinnedToCore( audio_task1, "SynthTask1", 5000, NULL, 8, &SynthTask1, 0 );
-  xTaskCreatePinnedToCore( audio_task2, "SynthTask2", 5000, NULL, 1, &SynthTask2, 1 );
+  DEBUG("=====> Start synth tasks");
+  xTaskCreatePinnedToCore( audio_task1, "SynthTask1", 5000, NULL, 1, &SynthTask1, 0 );
+ // xTaskCreatePinnedToCore( audio_task2, "SynthTask2", 10000, NULL, 1, &SynthTask2, 1 );
 
   // somehow we should allow tasks to run
   // xTaskNotifyGive(SynthTask1);
   // xTaskNotifyGive(SynthTask2);
   processing = true;
 
-DEBUG("setup done");
+DEBUG("=====> Setup done");
 }
 
 static uint32_t last_ms = micros();
@@ -244,13 +244,13 @@ static uint32_t last_ms = micros();
  *  Finally, the LOOP () ***********************************************************************************************************
 */
 
-
 void loop() { // default loopTask running on the Core1
-  // you can still place some of your code here
-  vTaskDelete(NULL);
-  
-  // processButtons();     
-  // taskYIELD(); // this can wait
+//  static size_t counter = 0;
+//  if (counter % 1024 == 0) {DEBUG("I am alive");}
+  aciduino.run();   
+  taskYIELD(); // this can wait
+// processButtons();  
+// vTaskDelete(NULL);
 }
 
 /* 
