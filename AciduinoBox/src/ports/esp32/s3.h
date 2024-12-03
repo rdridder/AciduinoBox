@@ -60,21 +60,21 @@
 //#define NAV_ENCODER_DEC_PIN       13
 //#define NAV_ENCODER_INC_PIN       4
 
-#define NAV_SHIFT_PIN             12
+#define NAV_SHIFT_PIN             18
 
 #define NAV_FUNCTION1_PIN         14
 #define NAV_FUNCTION2_PIN         47
 #define NAV_GENERAL1_PIN          42
-#define NAV_GENERAL2_PIN          45
-#define NAV_RIGHT_PIN             13
+#define NAV_GENERAL2_PIN          41
+#define NAV_RIGHT_PIN             16
 #define NAV_UP_PIN                38
 #define NAV_DOWN_PIN              39
 #define NAV_LEFT_PIN              48
 
 #define TRANSPORT_BUTTON_1_PIN    40
 
-#define OLED_CLOCK_PIN            8
-#define OLED_DATA_PIN             9
+#define OLED_CLOCK_PIN            9
+#define OLED_DATA_PIN             8
 
 // going to use changer pot?
 // esp32 30pins
@@ -107,7 +107,9 @@
 
 // Display device
 //U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
-U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
+//U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
+
+U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE, OLED_CLOCK_PIN, OLED_DATA_PIN);
 
 // Midi device
 // initing midi devices
