@@ -69,7 +69,8 @@ typedef enum {
 typedef enum {
   MIDI_OUTPUT,
   CV_OUTPUT,
-  GATE_OUTPUT, 
+  GATE_OUTPUT,
+  ACIDBOX_OUTPUT,
 } SEQUENCER_OUTPUT;
 
 typedef struct
@@ -166,6 +167,9 @@ public:
   static void midiHandle(); // sync handle
   static void midiHandleSync(); // note input handle
 
+  // Acidbox
+  void setAcidBoxOutputCallback(void (*callback)(uint8_t msg_type, uint8_t byte1, uint8_t byte2, uint8_t channel, uint8_t port));
+
   // check sequencer/acid_sequencer.h for interface
   AcidSequencerClass seq;
 
@@ -245,6 +249,9 @@ private:
   uint16_t _pattern_total_mem_size;
   uint16_t _eprrom_pattern_address;
   uint16_t _eprrom_pattern_available;
+
+  // Acidbox
+  void (*_acidBoxCallback)(uint8_t msg_type, uint8_t byte1, uint8_t byte2, uint8_t channel, uint8_t port);
 
 };
 

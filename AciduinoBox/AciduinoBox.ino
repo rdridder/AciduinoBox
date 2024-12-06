@@ -176,6 +176,30 @@ static void IRAM_ATTR audio_task2(void *userData) {
  *  Quite an ordinary SETUP() *******************************************************************************************************************************
 */
 
+// Acidbox
+inline void handle_acid_midi_events(uint8_t msg_type, uint8_t byte1, uint8_t byte2, uint8_t channel, uint8_t port) {
+  switch(msg_type) {
+    case NOTE_ON:
+      if(channel == 0) {
+        Synth1.on_midi_noteON(byte1, byte2);
+      } else if(channel == 1) {
+        Synth2.on_midi_noteON(byte1, byte2);
+      } else if(channel == 4) {
+        Drums.NoteOn(byte1, byte2);
+      }
+      break;
+    case NOTE_OFF:
+      if(channel == 0) {
+        Synth1.on_midi_noteOFF(byte1, byte2);
+      } else if(channel == 1) {
+        Synth2.on_midi_noteOFF(byte1, byte2);
+      } else if(channel == 4) {
+        Drums.NoteOff(byte1);
+      }
+      break;      
+  }
+}
+
 void setup(void) {
 
 #ifdef DEBUG_ON 
@@ -224,8 +248,8 @@ void setup(void) {
   // inits all hardware setup for the selected port
   DEBUG("=====> Init ports aciduino");
   initPort();
-  
-  
+  aciduino.setAcidBoxOutputCallback(handle_acid_midi_events);
+
   DEBUG("=====> Start synth tasks");
   xTaskCreatePinnedToCore( audio_task1, "SynthTask1", 5000, NULL, 1, &SynthTask1, 0 );
  // xTaskCreatePinnedToCore( audio_task2, "SynthTask2", 10000, NULL, 1, &SynthTask2, 1 );

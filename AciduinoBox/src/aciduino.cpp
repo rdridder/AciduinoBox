@@ -32,7 +32,7 @@ void Aciduino::initSequencer()
 
   // init default track output data
   for(uint8_t track=0; track < TRACK_NUMBER_303+TRACK_NUMBER_808; track++) {
-    _track_output_setup[track].output = MIDI_OUTPUT;
+    _track_output_setup[track].output = ACIDBOX_OUTPUT;
     _track_output_setup[track].channel = track;
     _track_output_setup[track].port = 0;
   }
@@ -56,6 +56,13 @@ void Aciduino::initSequencer()
   loadSession();
   // load first pattern
   loadPattern(0);
+
+  // TODO, fix below
+  // The loadsession overwrites the ACIDBOX OUTPUT
+  for(uint8_t track=0; track < TRACK_NUMBER_303+TRACK_NUMBER_808; track++) {
+    _track_output_setup[track].output = ACIDBOX_OUTPUT;
+  }
+
 }
 
 void Aciduino::uClockSetup()
@@ -663,6 +670,9 @@ void Aciduino::sequencerOutHandler(uint8_t msg_type, uint8_t note, uint8_t veloc
     case MIDI_OUTPUT:
       aciduino.midiSequencerOutHandler(msg_type, note, velocity, aciduino._track_output_setup[track].channel, aciduino._track_output_setup[track].port);
       break;
+    case ACIDBOX_OUTPUT:
+      aciduino._acidBoxCallback(msg_type, note, velocity, aciduino._track_output_setup[track].channel, aciduino._track_output_setup[track].port);
+      break;
     case CV_OUTPUT:
       // soon boy...
       break;
@@ -815,6 +825,10 @@ void Aciduino::onClockStop()
   // force to turn bpm led off
   uCtrl.dout->write(BPM_LED, LOW);
 #endif
+}
+
+void Aciduino::setAcidBoxOutputCallback(void (*callback)(uint8_t msg_type, uint8_t byte1, uint8_t byte2, uint8_t channel, uint8_t port)) {
+  _acidBoxCallback = callback;
 }
 
 // static instantiation
