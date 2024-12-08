@@ -247,8 +247,9 @@ void setup(void) {
   
   // inits all hardware setup for the selected port
   DEBUG("=====> Init ports aciduino");
-  initPort();
+  // Moved setting callback above initPort
   aciduino.setAcidBoxOutputCallback(handle_acid_midi_events);
+  initPort();
 
   DEBUG("=====> Start synth tasks");
   xTaskCreatePinnedToCore( audio_task1, "SynthTask1", 5000, NULL, 1, &SynthTask1, 0 );

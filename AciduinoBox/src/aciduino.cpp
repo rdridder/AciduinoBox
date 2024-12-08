@@ -67,8 +67,9 @@ void Aciduino::initSequencer()
 
 void Aciduino::uClockSetup()
 {
+  // Moved the clock init below setting all callbacks
   // Inits the clock
-  uClock.init();
+  // uClock.init();  
   
   // Set the callback function for the step sequencer on 96PPQN and for step sequencer feature
   uClock.setOnPPQN(Aciduino::onPPQNCallback);
@@ -82,6 +83,9 @@ void Aciduino::uClockSetup()
   // Set the clock BPM to 126 BPM
   uClock.setTempo(126);
   //uClock.setMode(uClock.EXTERNAL_CLOCK);
+
+  // Inits the clock
+  uClock.init();  
 }
 
 void Aciduino::storageSetup()
